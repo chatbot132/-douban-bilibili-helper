@@ -1,92 +1,104 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>豆瓣 B 站解说助手 - 隐私政策</title>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
             line-height: 1.6;
             max-width: 800px;
-            margin: 0 auto;
+            margin: 20px auto;
             padding: 20px;
             color: #333;
+            border: 1px solid #eee;
+            border-radius: 8px;
         }
         h1 {
             color: #007722;
             border-bottom: 1px solid #eee;
             padding-bottom: 10px;
+            font-size: 1.8em;
+            text-align: center;
         }
         h2 {
             color: #494949;
             margin-top: 30px;
+            font-size: 1.4em;
+            border-bottom: 1px dashed #eee;
+            padding-bottom: 5px;
         }
-        .section {
-            margin: 20px 0;
+        p, li {
+            color: #555;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        strong {
+            color: #000;
+        }
+        .contact, .update-date {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #777;
+        }
+        a {
+            color: #007722;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <h1>豆瓣 B 站解说助手 - 隐私政策</h1>
-    
-    <div class="section">
-        <h2>1. 信息收集</h2>
-        <p>本扩展程序收集以下信息：</p>
-        <ul>
-            <li>当前浏览的豆瓣电影/书籍页面标题</li>
-            <li>用户点击的视频链接</li>
-            <li>用户偏好设置（如有）</li>
-        </ul>
-    </div>
 
-    <div class="section">
-        <h2>2. 信息使用</h2>
-        <p>收集的信息仅用于：</p>
-        <ul>
-            <li>在豆瓣页面显示相关的 B 站视频推荐</li>
-            <li>改善用户体验</li>
-            <li>保存用户偏好设置</li>
-        </ul>
-    </div>
+    <p>感谢您使用“豆瓣 B 站解说助手”Chrome 扩展程序（以下简称“本扩展”）。我们非常重视您的隐私。本隐私政策旨在说明本扩展在提供服务时如何处理信息。</p>
 
-    <div class="section">
-        <h2>3. 信息存储</h2>
-        <p>所有数据均存储在用户的浏览器本地存储中，不会上传到任何服务器。</p>
-    </div>
+    <h2>1. 本扩展的核心功能</h2>
+    <p>本扩展的核心功能是在您浏览豆瓣电影（movie.douban.com）和豆瓣读书（book.douban.com）的条目详情页面时，自动为您查找并展示来自哔哩哔哩（B站, bilibili.com）的相关解说视频。</p>
 
-    <div class="section">
-        <h2>4. 第三方服务</h2>
-        <p>本扩展程序会访问以下第三方网站：</p>
-        <ul>
-            <li>豆瓣（movie.douban.com, book.douban.com）</li>
-            <li>哔哩哔哩（search.bilibili.com）</li>
-        </ul>
-    </div>
+    <h2>2. 信息收集</h2>
+    <p>为了实现核心功能，本扩展需要访问和处理以下类型的信息：</p>
+    <ul>
+        <li><strong>您当前浏览的豆瓣页面标题：</strong>当您访问豆瓣电影或图书详情页时，本扩展的内容脚本（content.js）会读取该页面的标题（例如，“千与千寻”或“1923 第二季”）。</li>
+        <li><strong>网络请求与响应：</strong>本扩展的后台脚本（background.js）会使用从豆瓣页面标题生成的搜索关键词，向哔哩哔哩的搜索接口（`search.bilibili.com`）发起网络请求以获取相关的视频列表数据（HTML格式）。</li>
+    </ul>
+    <p><strong>请注意：</strong>本扩展<strong>不会</strong>收集、存储或传输任何可识别您个人身份的信息（例如您的豆瓣或B站账号、浏览历史、IP地址等）。</p>
 
-    <div class="section">
-        <h2>5. 用户权利</h2>
-        <p>用户可以：</p>
-        <ul>
-            <li>随时卸载扩展程序</li>
-            <li>清除本地存储的数据</li>
-            <li>禁用特定功能</li>
-        </ul>
-    </div>
+    <h2>3. 信息使用</h2>
+    <p>上述收集的信息仅用于以下目的：</p>
+    <ul>
+        <li><strong>生成搜索关键词：</strong>从豆瓣页面标题提取的信息用于构建在 B 站上搜索相关视频的查询词。</li>
+        <li><strong>获取相关视频：</strong>向 B 站搜索接口发送请求，以获取与当前豆瓣条目相关的视频列表。</li>
+        <li><strong>在豆瓣页面展示结果：</strong>将从 B 站获取的视频信息（如封面、标题、UP主、播放量）处理后，直接显示在您当前浏览的豆瓣页面的侧边栏，方便您查看和访问。</li>
+    </ul>
 
-    <div class="section">
-        <h2>6. 更新</h2>
-        <p>本隐私政策可能会随扩展程序的更新而更新。更新时会通过扩展程序的更新日志通知用户。</p>
-    </div>
+    <h2>4. 信息共享与第三方</h2>
+    <p>本扩展运行过程中涉及与以下第三方服务的数据交互：</p>
+    <ul>
+        <li><strong>哔哩哔哩 (Bilibili)：</strong>本扩展会将基于豆瓣标题生成的搜索查询发送至 B 站的公共搜索接口 (`search.bilibili.com`) 以获取公开的视频搜索结果。此过程不涉及传输您的个人身份信息。您通过本扩展访问 B 站内容时，可能需要遵守 B 站自身的服务条款和隐私政策。</li>
+    </ul>
+    <p>除上述情况外，本扩展不会与任何其他第三方共享您的任何信息。</p>
 
-    <div class="section">
-        <h2>7. 联系我们</h2>
-        <p>如果您对本隐私政策有任何疑问，请通过以下方式联系我们：</p>
-        <p>邮箱：deanforu@gmail.com</p>
-    </div>
+    <h2>5. 数据存储与安全</h2>
+    <p>本扩展<strong>不会</strong>在您的本地计算机或任何远程服务器上持久存储任何从您浏览活动中获取的数据或个人信息。所有信息的处理（如标题读取、搜索请求、结果展示）都是临时的，仅在扩展运行时为实现核心功能所必需。</p>
 
-    <div class="section">
-        <h2>8. 最后更新</h2>
-        <p>本隐私政策最后更新于：2024年4月9日</p>
-    </div>
+    <h2>6. 您的选择与权利</h2>
+    <p>您可以随时通过 Chrome 浏览器的扩展管理页面禁用或卸载本扩展。卸载后，本扩展将不再运行，也不会访问任何信息。</p>
+
+    <h2>7. 隐私政策的变更</h2>
+    <p>我们可能会根据业务发展或法律法规的要求更新本隐私政策。任何变更我们都会通过扩展程序的更新日志或描述进行通知。建议您定期查看以了解最新的隐私政策。</p>
+
+    <h2>8. 联系我们</h2>
+    <p class="contact">如果您对本隐私政策有任何疑问或建议，请通过以下方式联系开发者：<br>
+        邮箱：<a href="mailto:deanforu@gmail.com">deanforu@gmail.com</a>
+    </p>
+
+    <p class="update-date">本隐私政策最后更新于：2024年04月10日</p>
+
 </body>
-</html> 
+</html>

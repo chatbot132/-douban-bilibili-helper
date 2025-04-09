@@ -101,7 +101,6 @@
     }
 
     let cachedVideos = []; // 存储所有视频
-    let displayedVideos = new Set(); // 存储已展示过的视频ID
     let currentIndex = 0; // 当前显示的起始索引
     let currentQueryIndex = 0; // 当前搜索关键词索引
     let searchQueries = []; // 存储搜索关键词数组
@@ -201,30 +200,8 @@
                 });
 
                 if (cachedVideos.length > 0) {
-                    // 过滤已展示的视频
-                    const filteredVideos = filterDisplayedVideos(cachedVideos);
-                    console.log(`过滤后视频数量: ${filteredVideos.length}/${cachedVideos.length}`);
-                    
-                    if (filteredVideos.length >= 3) {
-                        // 如果过滤后仍有至少3个视频，则展示这些视频
-                        insertBilibiliResults(filteredVideos.slice(0, 3), searchUrl, displayKeyword || searchQuery);
-                    } else if (filteredVideos.length > 0) {
-                        // 如果过滤后不足3个视频，则使用未过滤的视频补足
-                        const remainingCount = 3 - filteredVideos.length;
-                        let additionalVideos = [];
-                        
-                        for (let i = 0; i < cachedVideos.length && additionalVideos.length < remainingCount; i++) {
-                            if (!filteredVideos.includes(cachedVideos[i])) {
-                                additionalVideos.push(cachedVideos[i]);
-                            }
-                        }
-                        
-                        const combinedVideos = [...filteredVideos, ...additionalVideos.slice(0, remainingCount)];
-                        insertBilibiliResults(combinedVideos, searchUrl, displayKeyword || searchQuery);
-                    } else {
-                        // 如果所有视频都已经展示过，则展示新的视频
-                        insertBilibiliResults(cachedVideos.slice(0, 3), searchUrl, displayKeyword || searchQuery);
-                    }
+                    // 直接展示前3个视频，无需过滤
+                    insertBilibiliResults(cachedVideos.slice(0, 3), searchUrl, displayKeyword || searchQuery);
                 } else {
                     console.log("未找到 B 站解说视频");
                     // 尝试下一个关键词
@@ -236,11 +213,6 @@
                 console.error("B 站搜索失败:", response.error);
             }
         });
-    }
-
-    // 过滤已展示的视频
-    function filterDisplayedVideos(videos) {
-        return videos.filter(video => !displayedVideos.has(video.id));
     }
 
     // 从URL中提取视频ID
@@ -351,11 +323,6 @@
 
                 // 插入视频项目
                 insertVideoItems(videos, videoContainer);
-
-                // 记录已展示的视频
-                videos.forEach(video => {
-                    displayedVideos.add(video.id);
-                });
 
                 // 添加 "去 B 站查看更多" 按钮
                 let moreLink = document.createElement("a");

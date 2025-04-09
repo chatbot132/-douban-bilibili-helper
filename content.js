@@ -22,10 +22,23 @@
         const chineseTitle = extractChineseTitle(title);
         if (!chineseTitle) return [];
 
+        console.log("原始标题:", title);
+        console.log("提取后的中文标题:", chineseTitle);
+
+        // 返回同时包含搜索关键词和显示关键词的对象数组
         return [
-            `《${chineseTitle}》解说`,
-            `《${chineseTitle}》 ${pageType} 解说`,
-            `《${chineseTitle}》`
+            {
+                search: `《${chineseTitle}》解说`,
+                display: chineseTitle
+            },
+            {
+                search: `《${chineseTitle}》 ${pageType} 解说`,
+                display: `${chineseTitle} ${pageType}`
+            },
+            {
+                search: `《${chineseTitle}》`,
+                display: chineseTitle
+            }
         ];
     }
 
@@ -33,31 +46,57 @@
     function extractChineseTitle(title) {
         if (!title) return "";
         
-        // 处理特殊情况：如果标题包含"第X季"这样的格式，并且后面跟着英文部分
-        // 例如：《1923 第二季 1923 season2》应该只提取出《1923 第二季》
-        const seasonPattern = /(.*?第[一二三四五六七八九十]+季)/;
-        const seasonMatch = title.match(seasonPattern);
+        console.log("提取标题，原始输入:", title);
         
-        if (seasonMatch && seasonMatch[1]) {
-            // 检查匹配结果后面是否跟着英文部分
-            const afterSeason = title.substring(seasonMatch[0].length);
-            // 如果后面跟着的是英文部分（不包含中文字符），则只返回匹配到的部分
-            if (afterSeason && !/[\u4e00-\u9fa5]/.test(afterSeason)) {
-                return seasonMatch[1].trim();
+        // 步骤1: 处理带有季度信息的特定格式标题（如"1923 第二季"）
+        const titleWords = title.split(/\s+/);
+        const seasonRegex = /第[一二三四五六七八九十]+季/;
+        
+        // 寻找季度信息词的位置
+        for (let i = 0; i < titleWords.length; i++) {
+            if (seasonRegex.test(titleWords[i])) {
+                // 找到季度信息词
+                const seasonWord = titleWords[i]; // 如"第二季"
+                
+                // 如果季度信息词前面有词，可能是剧名，如"1923 第二季"
+                if (i > 0) {
+                    const previousWord = titleWords[i-1]; // 如"1923"
+                    const combinedTitle = `${previousWord} ${seasonWord}`; // "1923 第二季"
+                    console.log("提取结果(剧名+季度):", combinedTitle);
+                    return combinedTitle;
+                } else {
+                    // 如果季度信息词是第一个词，检查后面是否有剧名
+                    // 处理"第二季 1923"或类似情况
+                    if (i+1 < titleWords.length) {
+                        const nextWord = titleWords[i+1]; // 可能是剧名
+                        
+                        // 避免将season, 第X部等作为剧名
+                        if (!/season|部|集|S\d+/i.test(nextWord)) {
+                            const combinedTitle = `${nextWord} ${seasonWord}`;
+                            console.log("提取结果(季度后剧名):", combinedTitle);
+                            return combinedTitle;
+                        }
+                    }
+                    
+                    // 如果只有季度信息词
+                    console.log("提取结果(仅季度):", seasonWord);
+                    return seasonWord;
+                }
             }
         }
         
-        // 如果没有找到符合上述模式的部分，则使用原来的方法
-        // 匹配所有中文字符（包括中文标点）和特殊符号
+        // 步骤2: 如果没有找到季度信息，或以上方法不适用，则提取所有中文字符
         const chineseRegex = /[\u4e00-\u9fa5\u3000-\u303f\uff00-\uff60\·\…\—\～\？]+/g;
         const matches = title.match(chineseRegex);
         
         if (matches && matches.length > 0) {
-            // 合并所有匹配结果
-            return matches.join('').trim();
+            const result = matches.join('').trim();
+            console.log("提取结果(中文字符):", result);
+            return result;
         }
         
-        // 如果没有找到中文，返回原标题
+        // 步骤3: 如果以上方法都不适用，返回原始标题
+        console.log("提取结果(原始标题):", title.trim());
         return title.trim();
     }
 
@@ -77,15 +116,15 @@
             searchQueries = generateSearchQueries(origTitle, pageType);
             if (searchQueries.length > 0) {
                 console.log("生成的搜索关键词:", searchQueries);
-                searchBilibili(searchQueries[0]);
+                searchBilibili(searchQueries[0].search, searchQueries[0].display);
             }
         }
     }
 
-    function searchBilibili(searchQuery) {
+    function searchBilibili(searchQuery, displayKeyword) {
         if (!searchQuery) return;
         
-        console.log("搜索关键词:", searchQuery);
+        console.log("搜索关键词:", searchQuery, "显示关键词:", displayKeyword);
         
         let searchUrl = `https://search.bilibili.com/all?keyword=${encodeURIComponent(searchQuery)}&order=click`;
 
@@ -168,7 +207,7 @@
                     
                     if (filteredVideos.length >= 3) {
                         // 如果过滤后仍有至少3个视频，则展示这些视频
-                        insertBilibiliResults(filteredVideos.slice(0, 3), searchUrl, searchQuery);
+                        insertBilibiliResults(filteredVideos.slice(0, 3), searchUrl, displayKeyword || searchQuery);
                     } else if (filteredVideos.length > 0) {
                         // 如果过滤后不足3个视频，则使用未过滤的视频补足
                         const remainingCount = 3 - filteredVideos.length;
@@ -181,10 +220,10 @@
                         }
                         
                         const combinedVideos = [...filteredVideos, ...additionalVideos.slice(0, remainingCount)];
-                        insertBilibiliResults(combinedVideos, searchUrl, searchQuery);
+                        insertBilibiliResults(combinedVideos, searchUrl, displayKeyword || searchQuery);
                     } else {
                         // 如果所有视频都已经展示过，则展示新的视频
-                        insertBilibiliResults(cachedVideos.slice(0, 3), searchUrl, searchQuery);
+                        insertBilibiliResults(cachedVideos.slice(0, 3), searchUrl, displayKeyword || searchQuery);
                     }
                 } else {
                     console.log("未找到 B 站解说视频");
@@ -216,10 +255,12 @@
         
         currentQueryIndex = (currentQueryIndex + 1) % searchQueries.length;
         const nextQuery = searchQueries[currentQueryIndex];
-        console.log("切换到搜索关键词:", nextQuery);
+        const searchTerm = nextQuery.search;
+        const displayTerm = nextQuery.display;
+        console.log("切换到搜索关键词:", searchTerm, "显示关键词:", displayTerm);
         
         // 使用新的搜索关键词重新搜索
-        searchBilibili(nextQuery);
+        searchBilibili(searchTerm, displayTerm);
     }
 
     function insertBilibiliResults(videos, searchUrl, currentKeyword) {
@@ -277,7 +318,7 @@
 
                 // 添加当前关键词指示
                 let currentQueryText = document.createElement("span");
-                currentQueryText.innerText = `当前：${currentKeyword}`;
+                currentQueryText.innerText = `当前: ${currentKeyword}`;
                 currentQueryText.style.fontSize = "12px";
                 currentQueryText.style.color = "#999";
 

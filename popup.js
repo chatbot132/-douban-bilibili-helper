@@ -1,17 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // 获取当前标签页信息
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        const currentTab = tabs[0];
-        const url = currentTab.url;
-        
-        // 检查是否在豆瓣页面
-        if (url.includes('movie.douban.com/subject/') || url.includes('book.douban.com/subject/')) {
-            // 更新状态显示
-            updateStatus('已启用', true);
-        } else {
-            updateStatus('请在豆瓣电影/书籍页面使用', false);
-        }
-    });
+    // 显示一个固定的状态信息
+    updateStatus('豆瓣 B 站助手已激活', true);
 });
 
 // 更新状态显示
@@ -36,21 +25,21 @@ function updateStatus(message, isActive) {
     document.body.appendChild(statusDiv);
 }
 
-// 添加设置按钮
-const settingsButton = document.createElement('button');
-settingsButton.textContent = '设置';
-settingsButton.style.marginTop = '15px';
-settingsButton.style.padding = '8px 16px';
-settingsButton.style.backgroundColor = '#007722';
-settingsButton.style.color = 'white';
-settingsButton.style.border = 'none';
-settingsButton.style.borderRadius = '4px';
-settingsButton.style.cursor = 'pointer';
-settingsButton.style.width = '100%';
+// // 添加设置按钮 (如果不需要可以注释掉或删除)
+// const settingsButton = document.createElement('button');
+// settingsButton.textContent = '设置';
+// settingsButton.style.marginTop = '15px';
+// settingsButton.style.padding = '8px 16px';
+// settingsButton.style.backgroundColor = '#007722';
+// settingsButton.style.color = 'white';
+// settingsButton.style.border = 'none';
+// settingsButton.style.borderRadius = '4px';
+// settingsButton.style.cursor = 'pointer';
+// settingsButton.style.width = '100%';
 
-settingsButton.addEventListener('click', function() {
-    // 打开设置页面
-    chrome.runtime.openOptionsPage();
-});
+// settingsButton.addEventListener('click', function() {
+//     // 打开设置页面
+//     chrome.runtime.openOptionsPage();
+// });
 
-document.body.appendChild(settingsButton); 
+// document.body.appendChild(settingsButton); 

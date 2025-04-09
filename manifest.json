@@ -4,7 +4,6 @@
   "version": "1.0",
   "description": "在豆瓣电影/书籍页面推荐 B 站解说视频",
   "permissions": [
-    "tabs"
   ],
   "host_permissions": [
     "https://movie.douban.com/*",
@@ -36,6 +35,5 @@
     "128": "icon.png"
   },
   "homepage_url": "https://github.com/Dean-Moriarty",
-  "author": "deanforu@gmail.com",
-  "privacy_policy_url": "https://github.com/Dean-Moriarty/douban-bilibili-helper/blob/main/privacy.html"
+  "author": "deanforu@gmail.com"
 }

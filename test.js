@@ -1,0 +1,1 @@
+const title = "1923 第二季 1923 season 2"; console.log("原始标题:", title); const result = extractTitle(title); console.log("提取结果:", result); function extractTitle(title) { const match = title.match(/(.*?第[一二三四五六七八九十]+季)/); return match ? match[1] : "无匹配"; }

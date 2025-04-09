@@ -33,6 +33,21 @@
     function extractChineseTitle(title) {
         if (!title) return "";
         
+        // 处理特殊情况：如果标题包含"第X季"这样的格式，并且后面跟着英文部分
+        // 例如：《1923 第二季 1923 season2》应该只提取出《1923 第二季》
+        const seasonPattern = /(.*?第[一二三四五六七八九十]+季)/;
+        const seasonMatch = title.match(seasonPattern);
+        
+        if (seasonMatch && seasonMatch[1]) {
+            // 检查匹配结果后面是否跟着英文部分
+            const afterSeason = title.substring(seasonMatch[0].length);
+            // 如果后面跟着的是英文部分（不包含中文字符），则只返回匹配到的部分
+            if (afterSeason && !/[\u4e00-\u9fa5]/.test(afterSeason)) {
+                return seasonMatch[1].trim();
+            }
+        }
+        
+        // 如果没有找到符合上述模式的部分，则使用原来的方法
         // 匹配所有中文字符（包括中文标点）和特殊符号
         const chineseRegex = /[\u4e00-\u9fa5\u3000-\u303f\uff00-\uff60\·\…\—\～\？]+/g;
         const matches = title.match(chineseRegex);

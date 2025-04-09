@@ -45,58 +45,45 @@
     // 提取中文标题的函数
     function extractChineseTitle(title) {
         if (!title) return "";
-        
         console.log("提取标题，原始输入:", title);
-        
-        // 步骤1: 处理带有季度信息的特定格式标题（如"1923 第二季"）
-        const titleWords = title.split(/\s+/);
+
+        // 规则 1: 优先处理电视剧季度信息
         const seasonRegex = /第[一二三四五六七八九十]+季/;
-        
-        // 寻找季度信息词的位置
-        for (let i = 0; i < titleWords.length; i++) {
-            if (seasonRegex.test(titleWords[i])) {
-                // 找到季度信息词
-                const seasonWord = titleWords[i]; // 如"第二季"
-                
-                // 如果季度信息词前面有词，可能是剧名，如"1923 第二季"
-                if (i > 0) {
-                    const previousWord = titleWords[i-1]; // 如"1923"
-                    const combinedTitle = `${previousWord} ${seasonWord}`; // "1923 第二季"
-                    console.log("提取结果(剧名+季度):", combinedTitle);
-                    return combinedTitle;
-                } else {
-                    // 如果季度信息词是第一个词，检查后面是否有剧名
-                    // 处理"第二季 1923"或类似情况
-                    if (i+1 < titleWords.length) {
-                        const nextWord = titleWords[i+1]; // 可能是剧名
-                        
-                        // 避免将season, 第X部等作为剧名
-                        if (!/season|部|集|S\d+/i.test(nextWord)) {
-                            const combinedTitle = `${nextWord} ${seasonWord}`;
-                            console.log("提取结果(季度后剧名):", combinedTitle);
-                            return combinedTitle;
-                        }
-                    }
-                    
-                    // 如果只有季度信息词
-                    console.log("提取结果(仅季度):", seasonWord);
-                    return seasonWord;
-                }
+        // 匹配从开头到第一个"第X季"的完整部分
+        const seasonMatch = title.match(/(.*?第[一二三四五六七八九十]+季)/);
+        if (seasonMatch && seasonMatch[1]) {
+            const potentialTitle = seasonMatch[1].trim();
+            console.log("提取结果 (规则1 - 季度模式):", potentialTitle);
+            return potentialTitle; // 返回如 "1923 第二季" 或 "老友记 第十季"
+        }
+
+        // 规则 2: 处理电影标题 (提取到第一个空格为止，需含中文)
+        const firstSpaceIndex = title.indexOf(' ');
+        if (firstSpaceIndex > 0) {
+            const firstPart = title.substring(0, firstSpaceIndex);
+            // 检查提取的部分是否包含至少一个中文字符
+            if (/[\u4e00-\u9fa5]/.test(firstPart)) {
+                console.log("提取结果 (规则2 - 电影模式):", firstPart.trim());
+                return firstPart.trim(); // 返回如 "千与千寻", "霸王别姬", "哆啦A梦："
             }
         }
-        
-        // 步骤2: 如果没有找到季度信息，或以上方法不适用，则提取所有中文字符
-        const chineseRegex = /[\u4e00-\u9fa5\u3000-\u303f\uff00-\uff60\·\…\—\～\？]+/g;
+        // 如果标题本身不含空格，但包含中文，也应用此逻辑
+        if (firstSpaceIndex === -1 && /[\u4e00-\u9fa5]/.test(title)) {
+             console.log("提取结果 (规则2 - 电影模式，无空格):", title.trim());
+             return title.trim();
+        }
+
+        // 规则 3: 后备处理 - 提取所有中文字符、数字和特定标点
+        const chineseRegex = /[\u4e00-\u9fa5\d《》：！，。（）？·]+/g;
         const matches = title.match(chineseRegex);
-        
         if (matches && matches.length > 0) {
             const result = matches.join('').trim();
-            console.log("提取结果(中文字符):", result);
+            console.log("提取结果 (规则3 - 后备中文提取):", result);
             return result;
         }
-        
-        // 步骤3: 如果以上方法都不适用，返回原始标题
-        console.log("提取结果(原始标题):", title.trim());
+
+        // 规则 4: 最终后备 - 返回原始标题
+        console.log("提取结果 (规则4 - 原始标题):", title.trim());
         return title.trim();
     }
 
